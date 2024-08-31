@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import type { MouseEvent } from "react";
+import type { MouseEvent, UIEvent } from "react";
 
 import { useTimelineStore } from "./Store";
 import { getNum, getValidTime, getFormattedNumForRuler } from "./util";
@@ -32,22 +32,42 @@ export const useControlPlayHead = () => {
   const onDragOver = useCallback((e: MouseEvent<HTMLElement>) => {
     e.preventDefault();
   }, []);
-  const onDrop = useCallback((e: MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-    const target = e.target as HTMLElement;
-    const rect = target.getBoundingClientRect();
-    const offsetX = e.clientX - rect.left;
-    const validTime = getValidTime({
-      time: getFormattedNumForRuler(`${offsetX}`),
-      maxTime: `${currentMaxDuration}`,
-      preTime: `${currentMinDuration}`,
-    });
-    setCurrentMinDuration(getNum(validTime));
-  }, [setCurrentMinDuration, currentMaxDuration, currentMinDuration]);
+  const onDrop = useCallback(
+    (e: MouseEvent<HTMLElement>) => {
+      e.preventDefault();
+      const target = e.target as HTMLElement;
+      const rect = target.getBoundingClientRect();
+      const offsetX = e.clientX - rect.left;
+      const validTime = getValidTime({
+        time: getFormattedNumForRuler(`${offsetX}`),
+        maxTime: `${currentMaxDuration}`,
+        preTime: `${currentMinDuration}`,
+      });
+      setCurrentMinDuration(getNum(validTime));
+    },
+    [setCurrentMinDuration, currentMaxDuration, currentMinDuration]
+  );
 
   return {
     onClick,
     onDragOver,
     onDrop,
+  };
+};
+
+export const useSharedScrollHeight = () => {
+  const setSharedScrollTop = useTimelineStore(
+    (state) => state.setSharedScrollTop
+  );
+  const onScroll = useCallback(
+    (e: UIEvent<HTMLElement>) => {
+      e.preventDefault();
+      const target = e.target as HTMLElement;
+      setSharedScrollTop(target.scrollTop);
+    },
+    [setSharedScrollTop]
+  );
+  return {
+    onScroll,
   };
 };

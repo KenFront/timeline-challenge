@@ -126,6 +126,10 @@ const CurrentTime: FC<{
     setTime(`${currentMinDuration}`);
   }, [currentMinDuration]);
 
+  useEffect(() => {
+    setCurrentMinDuration(getNum(time))
+  }, [])
+
   return (
     <input
       className="bg-gray-700 px-1 rounded"
@@ -235,6 +239,10 @@ const MaxTime: FC<{
   useEffect(() => {
     setPrevTime(maxTime);
   }, [maxTime]);
+
+  useEffect(() => {
+    setCurrentMaxDuration(getNum(maxTime))
+  }, [])
 
   return (
     <input
