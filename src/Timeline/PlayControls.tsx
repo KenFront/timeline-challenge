@@ -13,9 +13,10 @@ const TIME_INTERVAL = 10;
 const MIN_MAX_TIME = 100;
 
 const getNum = (str: string) => +str;
+const getFormattedNum = (str: string) => Math.floor(getNum(str) / 10) * 10;
 
 const INIT_TIME = MIN_TIME;
-const INIT_MAX_TIME = MAX_TIME;
+const INIT_MAX_TIME = 2000;
 
 const isValidNum = (str: string) => /^-?(\d{1,}.\d{1,}|\d+)$/.test(str);
 
@@ -24,21 +25,20 @@ const getValidTime: (val: {
   maxTime: string;
   preTime: string;
 }) => string = ({ time, maxTime, preTime }) => {
-  console.log({ time, maxTime, preTime })
   if (!isValidNum(time)) return preTime;
 
-  const numTime = Math.round(getNum(time));
-  const numMaxTime = getNum(maxTime);
+  const numTime = getFormattedNum(time);
+  const numMaxTime = getFormattedNum(maxTime);
 
   if (numTime < MIN_TIME) {
     return `${MIN_TIME}`;
   }
 
   if (numTime > numMaxTime) {
-    return preTime;
+    return maxTime;
   }
 
-  return time.includes('.') ? `${numTime}` : time;
+  return `${numTime}`;
 };
 const getValidMaxTime: (val: {
   maxTime: string;
@@ -46,7 +46,7 @@ const getValidMaxTime: (val: {
 }) => string = ({ maxTime, preTime }) => {
   if (!isValidNum(maxTime)) return preTime;
 
-  const numMaxTime = Math.round(getNum(maxTime));
+  const numMaxTime = getFormattedNum(maxTime);
 
   if (numMaxTime < MIN_MAX_TIME) {
     return `${MIN_MAX_TIME}`;
@@ -56,7 +56,7 @@ const getValidMaxTime: (val: {
     return preTime;
   }
 
-  return maxTime.includes('.') ? `${numMaxTime}` : maxTime;
+  return `${numMaxTime}`
 };
 
 const CurrentTime: FC<{
@@ -145,7 +145,6 @@ const CurrentTime: FC<{
   useEffect(() => {
     setPrevTime(time);
   }, [time]);
-
 
   useEffect(() => {
     setTime(`${currentMinDuration}`);
@@ -281,8 +280,7 @@ const MaxTime: FC<{
 
 export const PlayControls = () => {
   // TODO: implement time <= maxTime
-  // Done, but it doesn't define what happend when time > maxTime
-  // Now if time > maxTime, it will be invalid.
+
   const ForbiddenInvalidChar = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
       switch (e.key) {
