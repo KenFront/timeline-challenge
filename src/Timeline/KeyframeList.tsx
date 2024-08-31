@@ -1,15 +1,25 @@
-import { memo, useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
+import type { UIEvent } from "react";
 import { Segment } from "./Segment";
-import { useControlPlayHead, useSharedScrollHeight } from "./hook";
+import { useControlPlayHead, useSharedScrollTop, useSharedScrollLeft } from "./hook";
 import { useTimelineStore } from "./Store";
 
-const KeyframeListComp = () => {
+export const KeyframeList = () => {
   // TODO: implement scroll sync with `Ruler` and `TrackList`
   const listRef = useRef<HTMLDivElement>(null);
   const { onClick, onDragOver, onDrop } = useControlPlayHead();
-  const { onScroll } = useSharedScrollHeight();
-  const sharedScrollTop = useTimelineStore(
-    (state) => state.sharedScrollTop
+  const { onScroll: onScrollTop } = useSharedScrollTop();
+  const sharedScrollTop = useTimelineStore((state) => state.sharedScrollTop);
+  const sharedScrollLeft = useTimelineStore((state) => state.sharedScrollLeft);
+  const { onScroll: onScrollLeft } = useSharedScrollLeft();
+
+  const onScroll = useCallback(
+    (e: UIEvent<HTMLElement>) => {
+      e.preventDefault();
+      onScrollTop(e);
+      onScrollLeft(e);
+    },
+    [onScrollLeft, onScrollTop]
   );
 
   useEffect(() => {
@@ -18,10 +28,16 @@ const KeyframeListComp = () => {
     }
   }, [listRef, sharedScrollTop]);
 
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.scrollLeft = sharedScrollLeft;
+    }
+  }, [listRef, sharedScrollLeft]);
+
   return (
     <div
       ref={listRef}
-      className="px-4 min-w-0 overflow-auto"
+      className="px-4 min-w-0 overflow-x-auto overflow-y-auto"
       data-testid="keyframe-list"
       onClick={onClick}
       onDragOver={onDragOver}
@@ -41,5 +57,3 @@ const KeyframeListComp = () => {
     </div>
   );
 };
-
-export const KeyframeList = memo(KeyframeListComp);

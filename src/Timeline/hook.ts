@@ -55,7 +55,7 @@ export const useControlPlayHead = () => {
   };
 };
 
-export const useSharedScrollHeight = () => {
+export const useSharedScrollTop = () => {
   const setSharedScrollTop = useTimelineStore(
     (state) => state.setSharedScrollTop
   );
@@ -66,6 +66,23 @@ export const useSharedScrollHeight = () => {
       setSharedScrollTop(target.scrollTop);
     },
     [setSharedScrollTop]
+  );
+  return {
+    onScroll,
+  };
+};
+
+export const useSharedScrollLeft = () => {
+  const setSharedScrollLeft = useTimelineStore(
+    (state) => state.setSharedScrollLeft
+  );
+  const onScroll = useCallback(
+    (e: UIEvent<HTMLElement>) => {
+      e.preventDefault();
+      const target = e.target as HTMLElement;
+      setSharedScrollLeft(target.scrollLeft);
+    },
+    [setSharedScrollLeft]
   );
   return {
     onScroll,

@@ -1,11 +1,11 @@
-import { memo, useEffect, useRef } from "react";
-import { useSharedScrollHeight } from "./hook";
+import { useEffect, useRef } from "react";
+import { useSharedScrollTop } from "./hook";
 import { useTimelineStore } from "./Store";
 
-const TrackListComp = () => {
+export const TrackList = () => {
   // TODO: implement scroll sync with `KeyframeList`
   const listRef = useRef<HTMLDivElement>(null);
-  const { onScroll } = useSharedScrollHeight();
+  const { onScroll } = useSharedScrollTop();
   const sharedScrollTop = useTimelineStore(
     (state) => state.sharedScrollTop
   );
@@ -60,4 +60,3 @@ const TrackListComp = () => {
   );
 };
 
-export const TrackList = memo(TrackListComp);
