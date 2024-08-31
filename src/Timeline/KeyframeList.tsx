@@ -1,9 +1,19 @@
+import { memo } from "react";
 import { Segment } from "./Segment";
-export const KeyframeList = () => {
+import { useControlPlayHead } from "./hook";
+
+const KeyframeListComp = () => {
   // TODO: implement scroll sync with `Ruler` and `TrackList`
+  const { onClick, onDragOver, onDrop } = useControlPlayHead();
 
   return (
-    <div className="px-4 min-w-0 overflow-auto" data-testid="keyframe-list">
+    <div
+      className="px-4 min-w-0 overflow-auto"
+      data-testid="keyframe-list"
+      onClick={onClick}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+    >
       <Segment />
       <Segment />
       <Segment />
@@ -17,3 +27,5 @@ export const KeyframeList = () => {
     </div>
   );
 };
+
+export const KeyframeList = memo(KeyframeListComp);

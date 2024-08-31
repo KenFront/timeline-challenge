@@ -8,38 +8,14 @@ import type {
 } from "react";
 import { MAX_TIME, MIN_TIME } from "./Constant";
 import { useTimelineStore } from "./Store";
+import { getValidTime, isValidNum, getFormattedNum, getNum } from "./util";
 
 const TIME_INTERVAL = 10;
 const MIN_MAX_TIME = 100;
 
-const getNum = (str: string) => +str;
-const getFormattedNum = (str: string) => Math.floor(getNum(str) / 10) * 10;
-
 const INIT_TIME = MIN_TIME;
 const INIT_MAX_TIME = 2000;
 
-const isValidNum = (str: string) => /^-?(\d{1,}.\d{1,}|\d+)$/.test(str);
-
-const getValidTime: (val: {
-  time: string;
-  maxTime: string;
-  preTime: string;
-}) => string = ({ time, maxTime, preTime }) => {
-  if (!isValidNum(time)) return preTime;
-
-  const numTime = getFormattedNum(time);
-  const numMaxTime = getFormattedNum(maxTime);
-
-  if (numTime < MIN_TIME) {
-    return `${MIN_TIME}`;
-  }
-
-  if (numTime > numMaxTime) {
-    return maxTime;
-  }
-
-  return `${numTime}`;
-};
 const getValidMaxTime: (val: {
   maxTime: string;
   preTime: string;
@@ -56,7 +32,7 @@ const getValidMaxTime: (val: {
     return preTime;
   }
 
-  return `${numMaxTime}`
+  return `${numMaxTime}`;
 };
 
 const CurrentTime: FC<{

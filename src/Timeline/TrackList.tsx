@@ -1,4 +1,6 @@
-export const TrackList = () => {
+import { memo } from "react";
+
+const TrackListComp = () => {
   // TODO: implement scroll sync with `KeyframeList`
 
   return (
@@ -41,3 +43,5 @@ export const TrackList = () => {
     </div>
   );
 };
+
+export const TrackList = memo(TrackListComp)
