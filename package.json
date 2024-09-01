@@ -22,6 +22,8 @@
     "zustand": "^4.5.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.46.1",
+    "@types/node": "^22.5.1",
     "@types/react": "18.2.38",
     "@types/react-dom": "18.2.15",
     "typescript": "4.4.4"
@@ -30,6 +32,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
+    "e2e-test": "yarn playwright test",
     "eject": "react-scripts eject"
   },
   "browserslist": [
