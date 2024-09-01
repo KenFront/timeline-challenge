@@ -6,7 +6,7 @@ import { useTimelineStore } from "./Store";
 export const Ruler = () => {
   // TODO: implement mousedown and mousemove to update time and Playhead position
   const listRef = useRef<HTMLDivElement>(null);
-  const { onClick, onDragOver, onDrop } = useControlPlayHead();
+  const { onMouseDown, onMouseMove, onMouseUp } = useControlPlayHead();
   const sharedScrollLeft = useTimelineStore((state) => state.sharedScrollLeft);
 
   const currentMaxDuration = useTimelineStore(
@@ -19,7 +19,7 @@ export const Ruler = () => {
       listRef.current.scrollLeft = sharedScrollLeft;
     }
   }, [listRef, sharedScrollLeft]);
-  
+
   return (
     <div
       ref={listRef}
@@ -28,15 +28,15 @@ export const Ruler = () => {
       overflow-x-auto overflow-y-hidden"
       data-testid="ruler"
       onScroll={onScroll}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={onMouseUp}
     >
       <div
         className="h-6 rounded-md bg-white/25"
         style={{
           width: `${currentMaxDuration}px`,
         }}
-        onClick={onClick}
-        onDragOver={onDragOver}
-        onDrop={onDrop}
       ></div>
     </div>
   );

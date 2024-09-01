@@ -1,10 +1,11 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import type { MouseEvent, UIEvent } from "react";
 
 import { useTimelineStore } from "./Store";
 import { getNum, getValidTime, getFormattedNumForRuler } from "./util";
 
 export const useControlPlayHead = () => {
+  const isMoving = useRef(false);
   const setCurrentMinDuration = useTimelineStore(
     (state) => state.setCurrentMinDuration
   );
@@ -14,8 +15,14 @@ export const useControlPlayHead = () => {
   const currentMinDuration = useTimelineStore(
     (state) => state.currentMinDuration
   );
-  const onClick = useCallback(
+
+  const onMouseDown = useCallback(() => {
+    isMoving.current = true;
+  }, [isMoving]);
+
+  const onMouseMove = useCallback(
     (e: MouseEvent<HTMLElement>) => {
+      if (!isMoving.current) return;
       const target = e.target as HTMLElement;
       const rect = target.getBoundingClientRect();
       const offsetX = e.clientX - rect.left;
@@ -26,32 +33,31 @@ export const useControlPlayHead = () => {
       });
       setCurrentMinDuration(getNum(validTime));
     },
-    [setCurrentMinDuration, currentMaxDuration, currentMinDuration]
+    [isMoving, setCurrentMinDuration, currentMaxDuration, currentMinDuration]
   );
 
-  const onDragOver = useCallback((e: MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-  }, []);
-  const onDrop = useCallback(
+  const onMouseUp = useCallback(
     (e: MouseEvent<HTMLElement>) => {
-      e.preventDefault();
-      const target = e.target as HTMLElement;
-      const rect = target.getBoundingClientRect();
-      const offsetX = e.clientX - rect.left;
-      const validTime = getValidTime({
-        time: getFormattedNumForRuler(`${offsetX}`),
-        maxTime: `${currentMaxDuration}`,
-        preTime: `${currentMinDuration}`,
-      });
-      setCurrentMinDuration(getNum(validTime));
+      if (isMoving.current) {
+        const target = e.target as HTMLElement;
+        const rect = target.getBoundingClientRect();
+        const offsetX = e.clientX - rect.left;
+        const validTime = getValidTime({
+          time: getFormattedNumForRuler(`${offsetX}`),
+          maxTime: `${currentMaxDuration}`,
+          preTime: `${currentMinDuration}`,
+        });
+        setCurrentMinDuration(getNum(validTime));
+      }
+      isMoving.current = false;
     },
-    [setCurrentMinDuration, currentMaxDuration, currentMinDuration]
+    [isMoving, setCurrentMinDuration, currentMaxDuration, currentMinDuration]
   );
 
   return {
-    onClick,
-    onDragOver,
-    onDrop,
+    onMouseDown,
+    onMouseMove,
+    onMouseUp,
   };
 };
 

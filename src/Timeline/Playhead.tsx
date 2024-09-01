@@ -6,7 +6,6 @@ export const Playhead = () => {
   );
   const sharedScrollLeft = useTimelineStore((state) => state.sharedScrollLeft);
   const position = currentMinDuration - sharedScrollLeft;
-  console.log(position)
 
   return (
     <div
@@ -16,7 +15,6 @@ export const Playhead = () => {
         transform: `translateX(calc(${position}px - 50%))`,
         display: position >= 0 ? "block" : "none",
       }}
-      draggable
     >
       <div className="absolute border-solid border-[5px] border-transparent border-t-yellow-600 -translate-x-1.5" />
     </div>
