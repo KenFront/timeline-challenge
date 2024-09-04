@@ -1,11 +1,13 @@
 import { useCallback, useRef } from "react";
 import type { MouseEvent, UIEvent } from "react";
+import { throttle } from "throttle-debounce";
 
 import { useTimelineStore } from "./Store";
 import { getNum, getValidTime, getFormattedNumForRuler } from "./util";
 
 export const useControlPlayHead = () => {
   const isMoving = useRef(false);
+  const scrollZones = useRef<Element[]>([]);
   const setCurrentMinDuration = useTimelineStore(
     (state) => state.setCurrentMinDuration
   );
@@ -18,40 +20,54 @@ export const useControlPlayHead = () => {
 
   const onMouseDown = useCallback(() => {
     isMoving.current = true;
+    scrollZones.current = Array.from(
+      document.querySelectorAll("[data-scroll-zone]")
+    );
   }, [isMoving]);
 
-  const onMouseMove = useCallback(
-    (e: MouseEvent<HTMLElement>) => {
-      if (!isMoving.current) return;
-      const target = e.target as HTMLElement;
-      const rect = target.getBoundingClientRect();
-      const offsetX = e.clientX - rect.left;
-      const validTime = getValidTime({
-        time: getFormattedNumForRuler(`${offsetX}`),
-        maxTime: `${currentMaxDuration}`,
-        preTime: `${currentMinDuration}`,
-      });
-      setCurrentMinDuration(getNum(validTime));
-    },
-    [isMoving, setCurrentMinDuration, currentMaxDuration, currentMinDuration]
-  );
+  const isXAsisOutside = useCallback((e: MouseEvent<HTMLElement>) => {
+    const [min, max] = scrollZones.current?.map((item) => {
+      const rect = item.getBoundingClientRect();
+      return [rect.left, rect.right];
+    })?.[0];
+    return e.clientX < min || e.clientX > max;
+  }, [scrollZones.current]);
+
+  const setCurrentPosition = useCallback((e: MouseEvent<HTMLElement>) => {
+    const target = scrollZones.current[0] as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;
+    const validTime = getValidTime({
+      time: getFormattedNumForRuler(`${offsetX}`),
+      maxTime: `${currentMaxDuration}`,
+      preTime: `${currentMinDuration}`,
+    });
+    setCurrentMinDuration(getNum(validTime));
+  }, [setCurrentMinDuration, currentMaxDuration, currentMinDuration]);
+
+  const onMouseMoveFn = throttle(25, (e: MouseEvent<HTMLElement>) => {
+    if (!isMoving.current) return;
+    if (isXAsisOutside(e)) {
+      isMoving.current = false;
+      return;
+    }
+    setCurrentPosition(e);
+  });
+
+  const onMouseMove = useCallback(onMouseMoveFn, [
+    isMoving,
+    isXAsisOutside,
+    setCurrentPosition
+  ]);
 
   const onMouseUp = useCallback(
     (e: MouseEvent<HTMLElement>) => {
-      if (isMoving.current) {
-        const target = e.target as HTMLElement;
-        const rect = target.getBoundingClientRect();
-        const offsetX = e.clientX - rect.left;
-        const validTime = getValidTime({
-          time: getFormattedNumForRuler(`${offsetX}`),
-          maxTime: `${currentMaxDuration}`,
-          preTime: `${currentMinDuration}`,
-        });
-        setCurrentMinDuration(getNum(validTime));
+      if (!isXAsisOutside(e) && isMoving.current) {
+        setCurrentPosition(e);
       }
       isMoving.current = false;
     },
-    [isMoving, setCurrentMinDuration, currentMaxDuration, currentMinDuration]
+    [isMoving, isXAsisOutside, setCurrentPosition]
   );
 
   return {

@@ -34,6 +34,7 @@ export const Ruler = () => {
     >
       <div
         className="h-6 rounded-md bg-white/25"
+        data-scroll-zone
         style={{
           width: `${currentMaxDuration}px`,
         }}
