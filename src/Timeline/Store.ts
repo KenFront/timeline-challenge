@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { MAX_TIME } from "./Constant";
+import { MAX_DURATION_TIME } from "./Constant";
 
 export type TimelineState = {
   currentMinDuration: number;
@@ -18,7 +18,7 @@ type TimelineActions = {
 
 const getInitStates: () => TimelineState = () => ({
   currentMinDuration: 0,
-  currentMaxDuration: MAX_TIME,
+  currentMaxDuration: MAX_DURATION_TIME,
   sharedScrollTop: 0,
   sharedScrollLeft: 0
 });

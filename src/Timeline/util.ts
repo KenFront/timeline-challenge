@@ -12,20 +12,20 @@ export const getFormattedNumForRuler = (str: string) =>
 
 export const getValidTime: (val: {
   time: string;
-  maxTime: string;
+  durationTime: string;
   preTime: string;
-}) => string = ({ time, maxTime, preTime }) => {
+}) => string = ({ time, durationTime, preTime }) => {
   if (!isValidNum(time)) return preTime;
 
   const numTime = getFormattedNum(time);
-  const numMaxTime = getFormattedNum(maxTime);
+  const numDurationTime = getFormattedNum(durationTime);
 
   if (numTime < MIN_TIME) {
     return `${MIN_TIME}`;
   }
 
-  if (numTime > numMaxTime) {
-    return maxTime;
+  if (numTime > numDurationTime) {
+    return durationTime;
   }
 
   return `${numTime}`;

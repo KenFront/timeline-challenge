@@ -6,33 +6,33 @@ import type {
   KeyboardEvent,
   MouseEvent,
 } from "react";
-import { MAX_TIME, MIN_TIME } from "./Constant";
+import { MAX_DURATION_TIME, MIN_TIME } from "./Constant";
 import { useTimelineStore } from "./Store";
 import { getValidTime, isValidNum, getFormattedNum, getNum } from "./util";
 
 const TIME_INTERVAL = 10;
-const MIN_MAX_TIME = 100;
+const DURATION_MIN_TIME = 100;
 
 const INIT_TIME = MIN_TIME;
 const INIT_MAX_TIME = 2000;
 
 const getValidMaxTime: (val: {
-  maxTime: string;
+  durationTime: string;
   preTime: string;
-}) => string = ({ maxTime, preTime }) => {
-  if (!isValidNum(maxTime)) return preTime;
+}) => string = ({ durationTime, preTime }) => {
+  if (!isValidNum(durationTime)) return preTime;
 
-  const numMaxTime = getFormattedNum(maxTime);
+  const numDurationTime = getFormattedNum(durationTime);
 
-  if (numMaxTime < MIN_MAX_TIME) {
-    return `${MIN_MAX_TIME}`;
+  if (numDurationTime < DURATION_MIN_TIME) {
+    return `${DURATION_MIN_TIME}`;
   }
 
-  if (numMaxTime > MAX_TIME) {
+  if (numDurationTime > MAX_DURATION_TIME) {
     return preTime;
   }
 
-  return `${numMaxTime}`;
+  return `${numDurationTime}`;
 };
 
 const CurrentTime: FC<{
@@ -62,7 +62,7 @@ const CurrentTime: FC<{
     (nowTime: string) => {
       const validTime = getValidTime({
         time: nowTime,
-        maxTime: `${currentMaxDuration}`,
+        durationTime: `${currentMaxDuration}`,
         preTime: `${currentMinDuration}`,
       });
       setTime(validTime);
@@ -136,7 +136,7 @@ const CurrentTime: FC<{
       type="number"
       data-testid="time"
       min={MIN_TIME}
-      max={MAX_TIME}
+      max={MAX_DURATION_TIME}
       step={TIME_INTERVAL}
       value={time}
       onChange={onTimeChange}
@@ -151,8 +151,8 @@ const CurrentTime: FC<{
 const MaxTime: FC<{
   ForbiddenInvalidChar: (e: KeyboardEvent<HTMLInputElement>) => void;
 }> = ({ ForbiddenInvalidChar }) => {
-  const [maxTime, setMaxTime] = useState(`${INIT_MAX_TIME}`);
-  const [prevTime, setPrevTime] = useState(maxTime);
+  const [durationTime, setMaxTime] = useState(`${INIT_MAX_TIME}`);
+  const [prevTime, setPrevTime] = useState(durationTime);
 
   const currentMaxDuration = useTimelineStore(
     (state) => state.currentMaxDuration
@@ -177,7 +177,7 @@ const MaxTime: FC<{
   const setMaxValidTime = useCallback(
     (nowTime: string) => {
       const validTime = getValidMaxTime({
-        maxTime: nowTime,
+        durationTime: nowTime,
         preTime: `${currentMaxDuration}`,
       });
       setMaxTime(validTime);
@@ -225,23 +225,23 @@ const MaxTime: FC<{
   const onMaxTimeMouseUp = useCallback(
     (e: MouseEvent<HTMLInputElement>) => {
       const target = e.target as HTMLInputElement;
-      switch (getNum(maxTime) - getNum(prevTime)) {
+      switch (getNum(durationTime) - getNum(prevTime)) {
         case TIME_INTERVAL:
         case -TIME_INTERVAL:
-          setMaxValidTime(maxTime);
+          setMaxValidTime(durationTime);
           target.select();
           break;
       }
     },
-    [setMaxValidTime, maxTime]
+    [setMaxValidTime, durationTime]
   );
 
   useEffect(() => {
-    setPrevTime(maxTime);
-  }, [maxTime]);
+    setPrevTime(durationTime);
+  }, [durationTime]);
 
   useEffect(() => {
-    setCurrentMaxDuration(getNum(maxTime))
+    setCurrentMaxDuration(getNum(durationTime))
   }, [])
 
   return (
@@ -249,10 +249,10 @@ const MaxTime: FC<{
       className="bg-gray-700 px-1 rounded"
       type="number"
       data-testid="max-time"
-      min={MIN_MAX_TIME}
-      max={MAX_TIME}
+      min={DURATION_MIN_TIME}
+      max={MAX_DURATION_TIME}
       step={TIME_INTERVAL}
-      value={maxTime}
+      value={durationTime}
       onChange={onMaxTimeChange}
       onBlur={onMaxTimeBlur}
       onKeyUp={onMaxTimeKeyup}
@@ -263,7 +263,7 @@ const MaxTime: FC<{
 };
 
 export const PlayControls = () => {
-  // TODO: implement time <= maxTime
+  // TODO: implement time <= durationTime
 
   const ForbiddenInvalidChar = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {

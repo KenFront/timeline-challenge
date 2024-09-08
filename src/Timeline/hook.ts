@@ -39,7 +39,7 @@ export const useControlPlayHead = () => {
     const offsetX = e.clientX - rect.left;
     const validTime = getValidTime({
       time: getFormattedNumForRuler(`${offsetX}`),
-      maxTime: `${currentMaxDuration}`,
+      durationTime: `${currentMaxDuration}`,
       preTime: `${currentMinDuration}`,
     });
     setCurrentMinDuration(getNum(validTime));
