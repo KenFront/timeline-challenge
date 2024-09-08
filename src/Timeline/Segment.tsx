@@ -11,6 +11,7 @@ export const Segment = () => {
     <div
       className="py-2"
       data-testid="segment"
+      data-scroll-zone
       style={{
         width: `${currentMaxDuration}px`,
       }}

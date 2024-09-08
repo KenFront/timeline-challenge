@@ -25,25 +25,31 @@ export const useControlPlayHead = () => {
     );
   }, [isMoving]);
 
-  const isXAsisOutside = useCallback((e: MouseEvent<HTMLElement>) => {
-    const [min, max] = scrollZones.current?.map((item) => {
-      const rect = item.getBoundingClientRect();
-      return [rect.left, rect.right];
-    })?.[0];
-    return e.clientX < min || e.clientX > max;
-  }, [scrollZones.current]);
+  const isXAsisOutside = useCallback(
+    (e: MouseEvent<HTMLElement>) => {
+      if (scrollZones.current) {
+        const { left, right } = scrollZones.current[0].getBoundingClientRect();
+        return e.clientX < left || e.clientX > right;
+      }
+      return false;
+    },
+    [scrollZones.current]
+  );
 
-  const setCurrentPosition = useCallback((e: MouseEvent<HTMLElement>) => {
-    const target = scrollZones.current[0] as HTMLElement;
-    const rect = target.getBoundingClientRect();
-    const offsetX = e.clientX - rect.left;
-    const validTime = getValidTime({
-      time: getFormattedNumForRuler(`${offsetX}`),
-      durationTime: `${currentMaxDuration}`,
-      preTime: `${currentMinDuration}`,
-    });
-    setCurrentMinDuration(getNum(validTime));
-  }, [setCurrentMinDuration, currentMaxDuration, currentMinDuration]);
+  const setCurrentPosition = useCallback(
+    (e: MouseEvent<HTMLElement>) => {
+      const target = scrollZones.current[0] as HTMLElement;
+      const rect = target.getBoundingClientRect();
+      const offsetX = e.clientX - rect.left;
+      const validTime = getValidTime({
+        time: getFormattedNumForRuler(`${offsetX}`),
+        durationTime: `${currentMaxDuration}`,
+        preTime: `${currentMinDuration}`,
+      });
+      setCurrentMinDuration(getNum(validTime));
+    },
+    [setCurrentMinDuration, currentMaxDuration, currentMinDuration]
+  );
 
   const onMouseMoveFn = throttle(25, (e: MouseEvent<HTMLElement>) => {
     if (!isMoving.current) return;
@@ -57,7 +63,7 @@ export const useControlPlayHead = () => {
   const onMouseMove = useCallback(onMouseMoveFn, [
     isMoving,
     isXAsisOutside,
-    setCurrentPosition
+    setCurrentPosition,
   ]);
 
   const onMouseUp = useCallback(
