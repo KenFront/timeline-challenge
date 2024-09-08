@@ -7,3 +7,7 @@ export const getTimeInputResult = async ({ timeInput, playhead, value }) => {
     `transform: translateX(calc(-50% + ${value}px)); display: block;`
   );
 };
+
+export const getDurationInputResult = async ({ durationInput, value }) => {
+  await expect(durationInput).toHaveValue(`${value}`);
+};
