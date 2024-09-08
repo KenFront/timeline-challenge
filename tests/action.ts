@@ -18,3 +18,17 @@ export const clickNumberInputArrowDownButton = async (input) => {
     });
   }
 };
+
+
+
+export const clickRuler = async ({page, playhead , value}) => {
+  const playheadBox = await playhead.boundingBox();
+
+    if(!playheadBox) {
+      throw new Error('There is no playhead')
+    }
+
+    await page.mouse.move(playheadBox.x + value, playheadBox.y);
+    await page.mouse.down();
+    await page.mouse.up();
+};
