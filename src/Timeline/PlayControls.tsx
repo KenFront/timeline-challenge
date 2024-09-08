@@ -29,7 +29,7 @@ const getValidMaxTime: (val: {
   }
 
   if (numDurationTime > MAX_DURATION_TIME) {
-    return preTime;
+    return `${MAX_DURATION_TIME}`;
   }
 
   return `${numDurationTime}`;
